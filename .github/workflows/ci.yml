@@ -52,10 +52,17 @@ jobs:
       - name: Smoke test executable without Python
         shell: pwsh
         run: |
-          $pythonFreePath = ($env:PATH -split ';' | Where-Object { $_ -notmatch '(?i)python|uv' }) -join ';'
-          $env:PATH = $pythonFreePath
-          if (Get-Command python -ErrorAction SilentlyContinue) {
-            throw 'Python is still available on PATH'
+          $env:PATH = ($env:PATH -split ';' | Where-Object {
+            $directory = $_.Trim().Trim('"')
+            if (-not $directory -or $directory -match '(?i)WindowsApps|hostedtoolcache') { return $false }
+            foreach ($name in @('python.exe', 'python3.exe', 'py.exe')) {
+              if (Test-Path -LiteralPath (Join-Path $directory $name) -PathType Leaf) { return $false }
+            }
+            return $true
+          }) -join ';'
+          $pythonCommands = @(Get-Command python,python3,py -ErrorAction SilentlyContinue)
+          if ($pythonCommands.Count -gt 0) {
+            throw "Python commands are still available: $($pythonCommands | Out-String)"
           }
 
           $env:SCRAPPY_HOME = Join-Path $env:RUNNER_TEMP 'home'
