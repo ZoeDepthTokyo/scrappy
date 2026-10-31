@@ -106,6 +106,9 @@ def main():
             for _ in range(50):
                 if health(port):
                     break
+                # Quit can arrive before the initial health check completes.
+                if not server_thread.is_alive():
+                    break
                 time.sleep(0.1)
             else:
                 server.shutdown()
@@ -124,11 +127,6 @@ def main():
                 runtime_file.unlink()
             except OSError:
                 pass
-            # End the process even if a library left a non-daemon thread behind;
-            # a lingering process would lock Scrappy.exe and block updates.
-            if sys.stdout:
-                sys.stdout.flush()
-            os._exit(0)
 
 
 if __name__ == "__main__":

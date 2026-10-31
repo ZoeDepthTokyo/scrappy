@@ -40,9 +40,70 @@ jobs:
         with:
           name: dist
           path: dist/
-  release:
+  exe-smoke:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Smoke test executable without Python
+        shell: pwsh
+        run: |
+          $pythonFreePath = ($env:PATH -split ';' | Where-Object { $_ -notmatch '(?i)python|uv' }) -join ';'
+          $env:PATH = $pythonFreePath
+          if (Get-Command python -ErrorAction SilentlyContinue) {
+            throw 'Python is still available on PATH'
+          }
+
+          $env:SCRAPPY_HOME = Join-Path $env:RUNNER_TEMP 'home'
+          $env:SCRAPPY_PORT = '5099'
+          $env:SCRAPPY_NO_BROWSER = '1'
+          $exe = Join-Path $PWD 'dist/Scrappy.exe'
+          if (-not (Test-Path $exe)) { throw "Executable not found: $exe" }
+
+          $doctor = & $exe --doctor | ConvertFrom-Json
+          if (-not $doctor.version) { throw 'Doctor JSON has no version' }
+
+          $process = Start-Process -FilePath $exe -PassThru -WindowStyle Hidden
+          $base = 'http://127.0.0.1:5099'
+          $healthy = $false
+          for ($i = 0; $i -lt 60; $i++) {
+            try {
+              $health = Invoke-RestMethod -Uri "$base/health" -TimeoutSec 2
+              if ($health.app -eq 'scrappy') { $healthy = $true; break }
+            } catch {}
+            Start-Sleep -Seconds 1
+          }
+          if (-not $healthy) { throw 'Scrappy health endpoint did not become ready within 60 seconds' }
+
+          foreach ($route in @('/favorites', '/kanban', '/listings', '/run_meta', '/api/ai')) {
+            $response = Invoke-WebRequest -Uri "$base$route" -TimeoutSec 10
+            if ([int]$response.StatusCode -ne 200) { throw "$route returned $($response.StatusCode)" }
+          }
+
+          try {
+            Invoke-WebRequest -Uri "$base/api/quit" -Method Post -Headers @{ Origin = 'https://evil.example' } -TimeoutSec 10
+            throw 'Foreign Origin quit request was not rejected'
+          } catch {
+            if ($_.Exception.Response -and [int]$_.Exception.Response.StatusCode -eq 403) { }
+            elseif ($_.Exception.Message -eq 'Foreign Origin quit request was not rejected') { throw }
+            else { throw "Foreign Origin quit request did not return 403: $_" }
+          }
+
+          $quit = Invoke-WebRequest -Uri "$base/api/quit" -Method Post -TimeoutSec 10
+          if ([int]$quit.StatusCode -ne 200) { throw "Normal quit returned $($quit.StatusCode)" }
+          $exited = $false
+          for ($i = 0; $i -lt 15; $i++) {
+            if (-not (Get-Process -Name Scrappy -ErrorAction SilentlyContinue)) { $exited = $true; break }
+            Start-Sleep -Seconds 1
+          }
+          if (-not $exited) { throw 'Scrappy process remained after quit for 15 seconds' }
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build, exe-smoke]
     runs-on: ubuntu-latest
     permissions:
       contents: write

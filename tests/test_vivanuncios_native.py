@@ -13,6 +13,32 @@ import pytest
 from scrapers.vivanuncios_native import _parse_olx_next_data
 
 
+def test_http_403_reports_source_error_without_browser_fallback(monkeypatch, capsys):
+    from scrapers.httpx_adapter import HttpxAdapter
+    from scrapers.vivanuncios import VivanunciosScraper
+    from scrapers.vivanuncios_lightpanda import VivanunciosLightpanda
+
+    calls = []
+
+    def blocked(adapter, url):
+        calls.append(url)
+        adapter._record(url, 403, 0, 0, "httpx", "", 0)
+        return ""
+
+    def unexpected_fallback(self):
+        pytest.fail("A site block must not trigger a browser fallback")
+
+    monkeypatch.setattr(HttpxAdapter, "_health_rows", [])
+    monkeypatch.setattr(HttpxAdapter, "fetch_html", blocked)
+    monkeypatch.setattr(VivanunciosLightpanda, "fetch_listings", unexpected_fallback)
+    scraper = VivanunciosScraper({"criteria": {"neighborhoods": ["Roma Norte", "Condesa"]}})
+
+    assert scraper.fetch_listings() == []
+    assert scraper._source_error is True
+    assert len(calls) == 1
+    assert "Blocked by site (HTTP 403)" in capsys.readouterr().out
+
+
 def _wrap_next_data(payload: dict) -> str:
     blob = json.dumps({"props": {"pageProps": payload}})
     return f'<script id="__NEXT_DATA__" type="application/json">{blob}</script>'

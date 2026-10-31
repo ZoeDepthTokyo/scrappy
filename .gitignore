@@ -35,3 +35,4 @@ data/handoffs/
 
 data/
 .test-temp/
+.shutdown-diagnostic/

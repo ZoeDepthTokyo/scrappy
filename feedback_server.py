@@ -126,7 +126,9 @@ def quit_server():
         return jsonify({"error": "Server shutdown unavailable"}), 503
     threading.Thread(target=_SERVER.shutdown, daemon=True).start()
     # Backstop: if shutdown stalls, exit the process so the exe is never left running.
-    threading.Timer(2.0, os._exit, args=(0,)).start()
+    backstop = threading.Timer(10.0, os._exit, args=(0,))
+    backstop.daemon = True
+    backstop.start()
     return jsonify({"ok": True})
 
 

@@ -163,8 +163,9 @@ class VivanunciosNative(VivanunciosMixin, BaseScraper):
             timeout=30.0,
             source_name=self.SOURCE_NAME,
             rotate_ua=True,
-            use_curl_cffi_on_403=True,
+            use_curl_cffi_on_403=False,
         )
+        self._blocked_by_site = False
 
     def fetch_listings(self) -> list[RawListing]:
         out: list[RawListing] = []
@@ -174,7 +175,13 @@ class VivanunciosNative(VivanunciosMixin, BaseScraper):
         try:
             for i, url in enumerate(self._search_urls()):
                 hood_name = hoods[i] if i < len(hoods) else None
+                row_count = len(HttpxAdapter._health_rows)
                 html = self._adapter.fetch_html(url)
+                rows = HttpxAdapter._health_rows[row_count:]
+                if rows and rows[-1].get("status") == 403:
+                    self._blocked_by_site = True
+                    print("[vivanuncios] Blocked by site (HTTP 403)")
+                    break
                 if not html:
                     continue
                 # Parse chain: JSON-LD → __NEXT_DATA__ (primary for OLX) → microdata

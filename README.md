@@ -12,6 +12,8 @@ Download `Scrappy.exe` and `SHA256SUMS.txt` from [GitHub Releases](https://githu
 
 Use the setup panel to choose AI or No AI, optionally configure Firecrawl, and adjust Search criteria. You can revisit these choices in Settings.
 
+For a guided walkthrough and feedback form, see [BETA_TESTING.md](BETA_TESTING.md).
+
 ## Connect AI
 
 In Settings → AI, sign in with OpenRouter OAuth without copying a key, or select Gemini, OpenAI, Anthropic, or Ollama Cloud and enter a provider key in Settings. Choose No AI to use metadata scoring. **Your AI agent can do this for you: see [AGENTS.md](AGENTS.md) and [prompts/](prompts/).** Never paste credentials into chat. See [PRIVACY.md](PRIVACY.md).
@@ -53,6 +55,8 @@ Descarga `Scrappy.exe` y `SHA256SUMS.txt` desde [GitHub Releases](https://github
 ## Primer inicio
 
 En el panel de configuración elige IA o No AI, configura Firecrawl si quieres y ajusta los criterios de búsqueda. Puedes cambiar estas opciones después en Configuración.
+
+Para una guía paso a paso y un formulario de comentarios, consulta [BETA_TESTING.md](BETA_TESTING.md).
 
 ## Conectar IA
 

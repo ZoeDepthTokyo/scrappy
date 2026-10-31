@@ -1,0 +1,56 @@
+name: Beta feedback
+description: Share your experience trying Scrappy
+title: "Beta feedback: "
+labels: [beta-feedback]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Thanks for testing Scrappy. Please do not include passwords, provider keys,
+        private notes, or other personal information. Name is optional.
+  - type: input
+    id: name
+    attributes:
+      label: Name (optional)
+      description: You may leave this blank.
+  - type: input
+    id: first-listings-time
+    attributes:
+      label: Time until first listings appeared (minutes)
+      placeholder: e.g. 6
+  - type: input
+    id: click-count
+    attributes:
+      label: Number of clicks before first listings appeared
+      placeholder: e.g. 4
+  - type: textarea
+    id: hesitations
+    attributes:
+      label: Where did you hesitate or need help?
+      description: Include each place you remember.
+  - type: textarea
+    id: smartscreen
+    attributes:
+      label: Did SmartScreen confuse you? What happened?
+  - type: dropdown
+    id: data-survived
+    attributes:
+      label: Did your data survive closing and reopening?
+      options:
+        - Yes
+        - No
+        - Not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: overall-experience
+    attributes:
+      label: Overall experience (1 = difficult, 5 = easy)
+      options:
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+        - "5"
+    validations:
+      required: true
