@@ -1,0 +1,37 @@
+*.db
+__pycache__/
+*.pyc
+data/reports/
+.pytest_cache/
+.env
+.venv/
+venv/
+*.egg-info/
+dist/
+config.local.json
+
+# ML authenticated scraper runtime state
+data/ml_session.json
+data/ml_fingerprint.json
+data/ml_session_health.log
+data/spike_cookies.txt
+data/spike_result.html
+data/spike_result_*.html
+
+# Runtime artifacts (regenerated each run)
+data/*.log
+data/scraper_health.json
+
+# Sprint/audit transient state
+.audit_state/
+.playwright-mcp/
+.superpowers/
+build/
+
+# Research/probe outputs
+data/probe_*.html
+data/pincali_*
+data/handoffs/
+
+data/
+.test-temp/

@@ -1,0 +1,47 @@
+{
+  "cadence_days": 1,
+  "last_run": "2026-04-18",
+  "criteria": {
+    "neighborhoods": [
+      "Polanco",
+      "Polanco II",
+      "Amp Polanco",
+      "Lomas de Chapultepec",
+      "Bosques de las Lomas",
+      "Condesa",
+      "Hipódromo",
+      "Roma Norte",
+      "Roma Sur",
+      "Juárez",
+      "Cuauhtémoc",
+      "Amp Granada",
+      "Miguel Hidalgo",
+      "Naucalpan"
+    ],
+    "price_min": 40000,
+    "price_max": 45000,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "furnished": false,
+    "min_floor": 3,
+    "min_sqm": 75,
+    "require_photos": true,
+    "min_vision_score": 5,
+    "geo_filter": null
+  },
+  "nice_to_haves": [
+    "washer_dryer",
+    "fridge",
+    "parking"
+  ],
+  "sources": {
+    "inmuebles24": true,
+    "mercadolibre": true,
+    "vivanuncios": true,
+    "lamudi": true,
+    "propiedades": false,
+    "trovit": false,
+    "casa_mx": false,
+    "pincali": false
+  }
+}

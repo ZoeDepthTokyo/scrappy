@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scrappy"
+version = "0.5.0"
+description = "Scrappy — CDMX real-estate scraper and ranking pipeline"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.27",
+    "firecrawl-py>=1.0",
+    "flask>=3.0",
+    "beautifulsoup4>=4.12",
+    "keyring>=25",
+    "curl_cffi>=0.7",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8", "respx>=0.21", "playwright>=1.45"]
+
+[project.scripts]
+scrappy = "launcher:main"
+
+[tool.setuptools]
+py-modules = [
+    "ai_providers",
+    "launcher",
+    "kanban",
+    "paths",
+    "config_loader",
+    "db",
+    "favorites",
+    "feedback_server",
+    "geo_backfill",
+    "notify",
+    "prefilter",
+    "report",
+    "run",
+    "score_inbox",
+    "taste",
+    "vision",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["scrapers*", "pipeline*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]

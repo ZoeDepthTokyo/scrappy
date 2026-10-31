@@ -1,0 +1,19 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      # The two that would have caught this week's incidents:
+      - id: detect-private-key          # blocks committing a private key
+      - id: check-added-large-files     # blocks blobs >100MB (GitHub's hard limit)
+        args: ["--maxkb=100000"]
+      # Ordinary hygiene:
+      - id: check-merge-conflict
+      - id: check-json
+      - id: check-yaml
+        args: ["--allow-multiple-documents"]
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.2
+    hooks:
+      - id: gitleaks
